@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 
 const LOGO_URL     = '/logo.webp'
 const CARD_BG_URL  = 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=900&q=80&fit=crop'
@@ -822,7 +823,7 @@ export default function LandingPage() {
                         ))}
                       </div>
                     </div>
-                    <div>
+                    <div className="flex items-center gap-4">
                       <a href="https://trustytranslate.com" target="_blank" rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 font-jetbrains text-[0.75rem] group"
                         aria-label="Open Trusty Translate"
@@ -836,6 +837,11 @@ export default function LandingPage() {
                         </span>
                         {hoveredCard === 0 && <span className="cursor-blink text-[#EDEDED] select-none">_</span>}
                       </a>
+                      <Link href="/products/trusty-translate"
+                        className="font-jetbrains text-[0.65rem] text-[#3A3A40] hover:text-[#A1A1A6] transition-colors duration-200"
+                        style={{ paddingBottom: '1px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                        view profile
+                      </Link>
                     </div>
                   </div>
                 </article>
@@ -902,6 +908,11 @@ export default function LandingPage() {
                         </span>
                         {hoveredCard === 1 && <span className="cursor-blink text-[#EDEDED] select-none">_</span>}
                       </a>
+                      <Link href="/products/findus-br"
+                        className="font-jetbrains text-[0.65rem] text-[#3A3A40] hover:text-[#A1A1A6] transition-colors duration-200"
+                        style={{ paddingBottom: '1px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                        view profile
+                      </Link>
                     </div>
                   </div>
                 </article>
