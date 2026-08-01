@@ -534,7 +534,7 @@ export default function LandingPage() {
 
   /* ── Fetch + decode audio into memory on mount ── */
   useEffect(() => {
-    const URL = 'https://hacodesolutions.s3.us-east-1.amazonaws.com/mixkit-single-classic-click-1116.wav'
+    const URL = '/click.wav'
     const load = async () => {
       try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
