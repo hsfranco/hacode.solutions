@@ -224,12 +224,18 @@ function TechMarquee() {
           style={{ background: 'linear-gradient(to left, #0A0A0B, transparent)' }}
           aria-hidden="true"
         />
-        <div className="marquee-track flex gap-6 w-max">
+        <div className="marquee-track flex gap-3 w-max">
           {items.map((tech, i) => (
             <div
               key={i}
               className="flex items-center gap-2 font-jetbrains text-[0.65rem] tracking-[0.1em] uppercase shrink-0"
-              style={{ color: '#3A3A40' }}
+              style={{
+                color: '#3A3A40',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: '6px',
+                padding: '5px 10px',
+                background: 'rgba(255,255,255,0.02)',
+              }}
             >
               {tech.icon}
               <span>{tech.name}</span>
@@ -275,13 +281,18 @@ export default function LandingPage() {
   const [phaseIdx, setPhaseIdx]         = useState(0)
   const [phaseVisible, setPhaseVisible] = useState(true)
 
+  /* ── Preload audio ── */
+  useEffect(() => {
+    const audio = new Audio('https://hacodesolutions.s3.us-east-1.amazonaws.com/mixkit-single-classic-click-1116.wav')
+    audio.volume = 0.5
+    audio.preload = 'auto'
+    audioRef.current = audio
+  }, [])
+
   /* ── Click sound ── */
   const playClick = () => {
     try {
-      if (!audioRef.current) {
-        audioRef.current = new Audio('https://hacodesolutions.s3.us-east-1.amazonaws.com/mixkit-single-classic-click-1116.wav')
-        audioRef.current.volume = 0.5
-      }
+      if (!audioRef.current) return
       audioRef.current.currentTime = 0
       audioRef.current.play().catch(() => { /* blocked before user gesture */ })
     } catch { /* fail silently */ }
