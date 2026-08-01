@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Product } from '@/lib/products'
@@ -23,11 +23,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 /* ─── Main component ─────────────────────────────────────────────────────── */
 export default function ProductProfile({ product }: { product: Product }) {
-  const [mounted, setMounted] = useState(false)
-  const [buyOpen, setBuyOpen] = useState<'full' | 'specs' | null>(null)
   const rootRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => { setMounted(true) }, [])
 
   return (
     <div
@@ -237,7 +233,7 @@ export default function ProductProfile({ product }: { product: Product }) {
                 ))}
               </ul>
               <a
-                href="mailto:hallanfranco@gmail.com?subject=Full Implementation — ${product.name}"
+                href={`mailto:hallanfranco@gmail.com?subject=Full Implementation — ${product.name}`}
                 className="inline-flex items-center justify-center gap-2 font-jetbrains text-[0.7rem] tracking-[0.08em] uppercase px-4 py-2.5 rounded-lg transition-all duration-200"
                 style={{ background: '#FFFFFF', color: '#0A0A0B' }}
                 onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.88)')}
