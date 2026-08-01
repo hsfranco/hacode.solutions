@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 
-const LOGO_URL     = 'https://hacodesolutions.s3.us-east-1.amazonaws.com/trusty_translate_logo.jpg'
+const LOGO_URL     = '/logo.webp'
 const CARD_BG_URL  = 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=900&q=80&fit=crop'
 const CARD2_BG_URL = 'https://images.unsplash.com/photo-1519999482648-25049ddd37b1?w=900&q=80&fit=crop'
 
@@ -778,10 +778,8 @@ export default function LandingPage() {
                     minHeight: '240px',
                   }}
                 >
-                  <div aria-hidden="true" style={{
-                    position: 'absolute', inset: 0,
-                    backgroundImage: `url(${CARD_BG_URL})`,
-                    backgroundSize: 'cover', backgroundPosition: 'center',
+                  <Image aria-hidden="true" src={CARD_BG_URL} alt="" fill sizes="(max-width:640px) 100vw, 50vw" style={{
+                    objectFit: 'cover', objectPosition: 'center',
                     filter: 'grayscale(1)',
                     transform: hoveredCard === 0 ? 'scale(1.06)' : 'scale(1)',
                     transition: 'transform 0.65s cubic-bezier(0.22,1,0.36,1)',
@@ -860,10 +858,8 @@ export default function LandingPage() {
                     minHeight: '240px',
                   }}
                 >
-                  <div aria-hidden="true" style={{
-                    position: 'absolute', inset: 0,
-                    backgroundImage: `url(${CARD2_BG_URL})`,
-                    backgroundSize: 'cover', backgroundPosition: 'center',
+                  <Image aria-hidden="true" src={CARD2_BG_URL} alt="" fill sizes="(max-width:640px) 100vw, 50vw" style={{
+                    objectFit: 'cover', objectPosition: 'center',
                     filter: 'grayscale(1)',
                     transform: hoveredCard === 1 ? 'scale(1.06)' : 'scale(1)',
                     transition: 'transform 0.65s cubic-bezier(0.22,1,0.36,1)',

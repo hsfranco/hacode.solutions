@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Cormorant_Garamond, Inter, JetBrains_Mono, Poppins } from 'next/font/google'
+import { Cormorant_Garamond, Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 
 const cormorant = Cormorant_Garamond({
@@ -16,13 +16,6 @@ const inter = Inter({
   display: 'swap',
 })
 
-const poppins = Poppins({
-  subsets: ['latin'],
-  variable: '--font-poppins',
-  weight: ['600', '700', '800'],
-  display: 'swap',
-})
-
 const jetbrains = JetBrains_Mono({
   subsets: ['latin'],
   variable: '--font-jetbrains',
@@ -30,7 +23,7 @@ const jetbrains = JetBrains_Mono({
   display: 'swap',
 })
 
-const LOGO_URL = 'https://hacodesolutions.s3.us-east-1.amazonaws.com/trusty_translate_logo.jpg'
+const LOGO_URL = '/logo.webp'
 const SITE_URL = 'https://hacode.solutions'
 const TITLE    = 'HACODE SOLUTIONS — DevSpecs for AI'
 const DESC     = 'AI tools and DevSpecs built on 13 years of engineering. Buy ready-to-use AI tools or the exact specs to build them yourself.'
@@ -65,7 +58,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${inter.variable} ${jetbrains.variable} ${poppins.variable}`}>
+    <html lang="en" className={`${cormorant.variable} ${inter.variable} ${jetbrains.variable}`}>
       <body
         className="font-inter antialiased overflow-x-hidden"
         style={{ backgroundColor: '#0A0A0B', color: '#EDEDED' }}
