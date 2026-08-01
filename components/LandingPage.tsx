@@ -427,15 +427,25 @@ function LoadingScreen({ onDone, audioReady }: { onDone: () => void; audioReady:
         </span>
       </div>
 
-      {/* Brand name */}
-      <span style={{
-        fontFamily: 'var(--font-poppins), sans-serif',
-        fontWeight: 600, fontSize: '0.7rem',
-        letterSpacing: '0.22em', color: '#3A3A40',
-        textTransform: 'uppercase',
-      }}>
-        HACODE SOLUTIONS
-      </span>
+      {/* Brand name — matches home header */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+        <span style={{
+          fontFamily: 'var(--font-jetbrains), monospace',
+          fontWeight: 700, fontSize: '1.0rem',
+          letterSpacing: '0.12em', color: '#FFFFFF',
+          textTransform: 'uppercase', lineHeight: 1,
+        }}>
+          HACODE SOLUTIONS
+        </span>
+        <span style={{
+          fontFamily: 'var(--font-jetbrains), monospace',
+          fontWeight: 400, fontSize: '0.58rem',
+          letterSpacing: '0.14em', color: '#525258',
+          textTransform: 'uppercase', lineHeight: 1,
+        }}>
+          Digital Software House
+        </span>
+      </div>
 
       {/* Bottom progress line */}
       <div style={{
@@ -658,7 +668,7 @@ export default function LandingPage() {
           <div className="flex flex-col gap-1">
             <span
               className="text-white leading-none uppercase tracking-[0.12em]"
-              style={{ fontFamily: 'var(--font-poppins), sans-serif', fontWeight: 700, fontSize: '1.0rem' }}
+              style={{ fontFamily: 'var(--font-jetbrains), monospace', fontWeight: 700, fontSize: '1.0rem' }}
             >
               HACODE SOLUTIONS
             </span>
