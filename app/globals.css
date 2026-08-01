@@ -75,6 +75,10 @@
   outline-offset: 3px;
 }
 
+/* ── Custom cursor ──────────────────────────────────────────────────────────── */
+* { cursor: none !important; }
+@media (pointer: coarse) { * { cursor: auto !important; } }
+
 /* ── Focus states ───────────────────────────────────────────────────────────── */
 a:focus-visible,
 button:focus-visible {
