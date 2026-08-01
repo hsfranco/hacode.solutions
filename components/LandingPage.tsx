@@ -271,6 +271,55 @@ const PHASES = [
   'Ship in Days, Not Months',
 ]
 
+/* ─── Path box ──────────────────────────────────────────────────────────────── */
+function PathBox({ n, title, body }: { n: string; title: string; body: string }) {
+  const [hovered, setHovered] = useState(false)
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="flex items-start gap-3 px-4 py-3 rounded-lg"
+      style={{
+        border: `1px solid ${hovered ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.07)'}`,
+        background: hovered ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.02)',
+        transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
+        boxShadow: hovered ? '0 8px 24px rgba(0,0,0,0.4)' : 'none',
+        transition: 'border-color 0.25s ease, background 0.25s ease, transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease',
+      }}
+    >
+      <span
+        className="font-jetbrains text-[0.6rem] mt-[2px] shrink-0"
+        style={{
+          color: hovered ? 'rgba(255,255,255,0.5)' : '#525258',
+          transition: 'color 0.25s ease',
+        }}
+      >
+        {n}
+      </span>
+      <div>
+        <p
+          className="font-inter text-[0.78rem] leading-snug"
+          style={{
+            color: hovered ? '#FFFFFF' : '#EDEDED',
+            transition: 'color 0.25s ease',
+          }}
+        >
+          {title}
+        </p>
+        <p
+          className="font-inter text-[0.72rem] leading-relaxed mt-0.5"
+          style={{
+            color: hovered ? '#A1A1A6' : '#525258',
+            transition: 'color 0.25s ease',
+          }}
+        >
+          {body}
+        </p>
+      </div>
+    </div>
+  )
+}
+
 /* ─── Custom cursor ─────────────────────────────────────────────────────────── */
 function CustomCursor() {
   const dotRef   = useRef<HTMLDivElement>(null)
@@ -656,24 +705,20 @@ export default function LandingPage() {
 
           {/* Two paths */}
           <div className="flex flex-col gap-2">
-            <div className="flex items-start gap-3 px-4 py-3 rounded-lg" style={{ border: '1px solid rgba(255,255,255,0.07)', background: 'rgba(255,255,255,0.02)' }}>
-              <span className="font-jetbrains text-[0.6rem] text-[#525258] mt-[2px] shrink-0">01</span>
-              <div>
-                <p className="font-inter text-[0.78rem] text-[#EDEDED] leading-snug">Full Implementation</p>
-                <p className="font-inter text-[0.72rem] text-[#525258] leading-relaxed mt-0.5">
-                  We scope, build, and ship the entire system for you. Cloud infrastructure, AI integrations, and all.
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3 px-4 py-3 rounded-lg" style={{ border: '1px solid rgba(255,255,255,0.07)', background: 'rgba(255,255,255,0.02)' }}>
-              <span className="font-jetbrains text-[0.6rem] text-[#525258] mt-[2px] shrink-0">02</span>
-              <div>
-                <p className="font-inter text-[0.78rem] text-[#EDEDED] leading-snug">DevSpecs Only</p>
-                <p className="font-inter text-[0.72rem] text-[#525258] leading-relaxed mt-0.5">
-                  Get the complete prompt blueprints — architecture, prompts, and step-by-step specs — and run it yourself with any AI coding tool.
-                </p>
-              </div>
-            </div>
+            {[
+              {
+                n: '01',
+                title: 'Full Implementation',
+                body: 'We scope, build, and ship the entire system for you. Cloud infrastructure, AI integrations, and all.',
+              },
+              {
+                n: '02',
+                title: 'DevSpecs Only',
+                body: 'Get the complete prompt blueprints, architecture, and step-by-step specs, and run it yourself with any AI coding tool.',
+              },
+            ].map((item, i) => (
+              <PathBox key={i} n={item.n} title={item.title} body={item.body} />
+            ))}
           </div>
 
           <div className="flex items-center gap-3 justify-center">
