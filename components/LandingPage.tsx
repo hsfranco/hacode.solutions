@@ -578,17 +578,38 @@ export default function LandingPage() {
         </header>
 
         {/* ── Description ── */}
-        <div className="anim-about w-full max-w-[500px] flex flex-col gap-4">
+        <div className="anim-about w-full max-w-[500px] flex flex-col gap-5">
           <p className="font-inter text-[#A1A1A6] text-[0.9rem] leading-[1.75] text-center">
-            We build web solutions using{' '}
-            <span className="text-[#EDEDED]">Cloud services</span> and{' '}
-            <span className="text-[#EDEDED]">AI</span> — turning what used to take months
-            into days. Every system we deliver is engineered for speed, clarity, and scale.
+            We build software with <span className="text-[#EDEDED]">AI</span>, operate it, and sell it —
+            or hand you the exact <span className="text-[#EDEDED]">DevSpecs</span> so you can build it yourself.
           </p>
+
+          {/* Two paths */}
+          <div className="flex flex-col gap-2">
+            <div className="flex items-start gap-3 px-4 py-3 rounded-lg" style={{ border: '1px solid rgba(255,255,255,0.07)', background: 'rgba(255,255,255,0.02)' }}>
+              <span className="font-jetbrains text-[0.6rem] text-[#525258] mt-[2px] shrink-0">01</span>
+              <div>
+                <p className="font-inter text-[0.78rem] text-[#EDEDED] leading-snug">Full Implementation</p>
+                <p className="font-inter text-[0.72rem] text-[#525258] leading-relaxed mt-0.5">
+                  We scope, build, and ship the entire system for you — cloud infrastructure, AI integrations, and all.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 px-4 py-3 rounded-lg" style={{ border: '1px solid rgba(255,255,255,0.07)', background: 'rgba(255,255,255,0.02)' }}>
+              <span className="font-jetbrains text-[0.6rem] text-[#525258] mt-[2px] shrink-0">02</span>
+              <div>
+                <p className="font-inter text-[0.78rem] text-[#EDEDED] leading-snug">DevSpecs Only</p>
+                <p className="font-inter text-[0.72rem] text-[#525258] leading-relaxed mt-0.5">
+                  Get the complete prompt blueprints — architecture, prompts, and step-by-step specs — and run it yourself with any AI coding tool.
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div className="flex items-center gap-3 justify-center">
             <span className="h-px flex-1 max-w-[60px]" style={{ background: 'rgba(255,255,255,0.08)' }} aria-hidden="true" />
-            <p className="font-jetbrains text-[0.65rem] text-[#525258] tracking-[0.12em] text-center">
-              Ready-to-use AI tools &nbsp;·&nbsp; DevSpecs to build it yourself
+            <p className="font-jetbrains text-[0.6rem] text-[#3A3A40] tracking-[0.12em] text-center uppercase">
+              Choose your path
             </p>
             <span className="h-px flex-1 max-w-[60px]" style={{ background: 'rgba(255,255,255,0.08)' }} aria-hidden="true" />
           </div>
