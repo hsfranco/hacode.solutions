@@ -421,6 +421,23 @@ export default function LandingPage() {
   const [phaseIdx, setPhaseIdx]         = useState(0)
   const [phaseVisible, setPhaseVisible] = useState(true)
   const [ready, setReady]               = useState(false)
+  const [gsapLoaded, setGsapLoaded]     = useState(false)
+
+  /* ── Preload GSAP + hide elements immediately (during loading screen) ── */
+  useEffect(() => {
+    const noMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (noMotion) { setGsapLoaded(true); return }
+    import('gsap').then(({ gsap }) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      gsapRef.current = gsap as any
+      gsap.set('.anim-logo',    { opacity: 0, scale: 0.9 })
+      gsap.set('.anim-about',   { opacity: 0, y: 18 })
+      gsap.set('.anim-marquee', { opacity: 0 })
+      gsap.set('.anim-card',    { opacity: 0, y: 28 })
+      gsap.set('.anim-footer',  { opacity: 0 })
+      setGsapLoaded(true)
+    })
+  }, [])
 
   /* ── Fetch + decode audio into memory on mount ── */
   useEffect(() => {
@@ -469,38 +486,21 @@ export default function LandingPage() {
     gsapRef.current.to(logoRef.current, { scale: 1, duration: 0.65, ease: 'elastic.out(1, 0.45)' })
   }
 
-  /* ── Entrance animation — runs after loading screen exits ── */
+  /* ── Entrance animation — both GSAP and loading screen must be done ── */
   useEffect(() => {
-    if (!ready || !rootRef.current) return
-    const noMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (noMotion) return
-
-    let ctx: { revert: () => void } | undefined
-
-    const run = async () => {
-      const { gsap } = await import('gsap')
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      gsapRef.current = gsap as any
-
-      ctx = gsap.context(() => {
-        gsap.set('.anim-logo',    { opacity: 0, scale: 0.9 })
-        gsap.set('.anim-about',   { opacity: 0, y: 18 })
-        gsap.set('.anim-marquee', { opacity: 0 })
-        gsap.set('.anim-card',    { opacity: 0, y: 28 })
-        gsap.set('.anim-footer',  { opacity: 0 })
-
-        const tl = gsap.timeline({ delay: 0.1 })
-        tl.to('.anim-logo',    { opacity: 1, scale: 1, duration: 0.95, ease: 'power2.out' })
-          .to('.anim-about',   { opacity: 1, y: 0,     duration: 0.80, ease: 'power2.out' }, '-=0.45')
-          .to('.anim-marquee', { opacity: 1,            duration: 0.70, ease: 'power2.out' }, '-=0.35')
-          .to('.anim-card',    { opacity: 1, y: 0,     duration: 0.85, ease: 'power2.out' }, '-=0.40')
-          .to('.anim-footer',  { opacity: 1,            duration: 0.65, ease: 'power2.out' }, '-=0.35')
-      }, rootRef)
-    }
-
-    run()
-    return () => ctx?.revert()
-  }, [ready])
+    if (!ready || !gsapLoaded || !rootRef.current || !gsapRef.current) return
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const gsap = gsapRef.current as any
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ delay: 0.05 })
+      tl.to('.anim-logo',    { opacity: 1, scale: 1, duration: 0.95, ease: 'power2.out' })
+        .to('.anim-about',   { opacity: 1, y: 0,     duration: 0.80, ease: 'power2.out' }, '-=0.45')
+        .to('.anim-marquee', { opacity: 1,            duration: 0.70, ease: 'power2.out' }, '-=0.35')
+        .to('.anim-card',    { opacity: 1, y: 0,     duration: 0.85, ease: 'power2.out' }, '-=0.40')
+        .to('.anim-footer',  { opacity: 1,            duration: 0.65, ease: 'power2.out' }, '-=0.35')
+    }, rootRef)
+    return () => ctx.revert()
+  }, [ready, gsapLoaded])
 
   /* ── Phase rotation ── */
   useEffect(() => {
