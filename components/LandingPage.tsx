@@ -272,13 +272,34 @@ const PHASES = [
 ]
 
 /* ─── Path box ──────────────────────────────────────────────────────────────── */
-function PathBox({ n, title, body }: { n: string; title: string; body: string }) {
+/* Inline SVG icons for the two path cards */
+const IconRocket = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
+    <path d="m3.29 15 1.42 1.41"/>
+    <path d="M15 4.5c2.5-2.5 5.5-3 7-3s-.5 4.5-3 7L11 16.5l-5-5Z"/>
+    <path d="m15 4.5-5 5"/>
+    <path d="m9.5 16.5-2 2"/>
+  </svg>
+)
+
+const IconBlueprint = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+    <polyline points="14 2 14 8 20 8"/>
+    <line x1="8" y1="13" x2="16" y2="13"/>
+    <line x1="8" y1="17" x2="16" y2="17"/>
+    <line x1="8" y1="9" x2="10" y2="9"/>
+  </svg>
+)
+
+function PathBox({ n, title, body, icon }: { n: string; title: string; body: string; icon: React.ReactNode }) {
   const [hovered, setHovered] = useState(false)
   return (
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="flex items-start gap-3 px-5 py-5 rounded-xl h-full"
+      className="flex flex-col gap-4 px-5 py-5 rounded-xl h-full"
       style={{
         border: `1px solid ${hovered ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.07)'}`,
         background: hovered ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.02)',
@@ -287,34 +308,17 @@ function PathBox({ n, title, body }: { n: string; title: string; body: string })
         transition: 'border-color 0.25s ease, background 0.25s ease, transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease',
       }}
     >
-      <span
-        className="font-jetbrains text-[0.6rem] mt-[2px] shrink-0"
-        style={{
-          color: hovered ? 'rgba(255,255,255,0.5)' : '#525258',
-          transition: 'color 0.25s ease',
-        }}
-      >
-        {n}
-      </span>
-      <div>
-        <p
-          className="font-inter text-[0.78rem] leading-snug"
-          style={{
-            color: hovered ? '#FFFFFF' : '#EDEDED',
-            transition: 'color 0.25s ease',
-          }}
-        >
-          {title}
-        </p>
-        <p
-          className="font-inter text-[0.72rem] leading-relaxed mt-0.5"
-          style={{
-            color: hovered ? '#A1A1A6' : '#525258',
-            transition: 'color 0.25s ease',
-          }}
-        >
-          {body}
-        </p>
+      {/* Icon with looping float animation */}
+      <div className="path-icon-wrap" style={{ color: hovered ? '#FFFFFF' : '#525258', transition: 'color 0.25s ease', ['--icon-delay' as string]: n === '02' ? '1.4s' : '0s' }}>
+        {icon}
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center gap-2">
+          <span className="font-jetbrains text-[0.55rem]" style={{ color: hovered ? 'rgba(255,255,255,0.4)' : '#3A3A40', transition: 'color 0.25s ease' }}>{n}</span>
+          <p className="font-inter text-[0.82rem] font-medium leading-snug" style={{ color: hovered ? '#FFFFFF' : '#EDEDED', transition: 'color 0.25s ease' }}>{title}</p>
+        </div>
+        <p className="font-inter text-[0.72rem] leading-relaxed" style={{ color: hovered ? '#A1A1A6' : '#525258', transition: 'color 0.25s ease' }}>{body}</p>
       </div>
     </div>
   )
@@ -724,14 +728,16 @@ export default function LandingPage() {
                 n: '01',
                 title: 'Full Implementation',
                 body: 'We scope, build, and ship the entire system for you. Cloud infrastructure, AI integrations, and all.',
+                icon: <IconRocket />,
               },
               {
                 n: '02',
                 title: 'DevSpecs Only',
                 body: 'Get the complete prompt blueprints, architecture, and step-by-step specs, and run it yourself with any AI coding tool.',
+                icon: <IconBlueprint />,
               },
             ].map((item, i) => (
-              <PathBox key={i} n={item.n} title={item.title} body={item.body} />
+              <PathBox key={i} n={item.n} title={item.title} body={item.body} icon={item.icon} />
             ))}
           </div>
 

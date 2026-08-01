@@ -75,6 +75,23 @@
   outline-offset: 3px;
 }
 
+/* ── Path card icon loop ────────────────────────────────────────────────────── */
+@keyframes icon-float {
+  0%, 100% { transform: translateY(0px);  opacity: 0.55; }
+  50%       { transform: translateY(-4px); opacity: 1;    }
+}
+@keyframes icon-spin-slow {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.path-icon-wrap svg {
+  animation: icon-float 2.8s ease-in-out infinite;
+  animation-delay: var(--icon-delay, 0s);
+}
+@media (prefers-reduced-motion: reduce) {
+  .path-icon-wrap svg { animation: none !important; opacity: 0.55; }
+}
+
 /* ── Custom cursor ──────────────────────────────────────────────────────────── */
 * { cursor: none !important; }
 @media (pointer: coarse) { * { cursor: auto !important; } }
