@@ -354,6 +354,8 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
     return () => clearInterval(id)
   }, [])
 
+  const displayed = String(progress).padStart(3, '0')
+
   return (
     <div
       aria-hidden="true"
@@ -362,39 +364,53 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
         background: '#0A0A0B',
         display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center',
+        gap: '28px',
         transform: exiting ? 'translateY(-100%)' : 'translateY(0)',
         transition: exiting ? 'transform 0.7s cubic-bezier(0.76, 0, 0.24, 1)' : 'none',
       }}
     >
-      {/* Logo */}
-      <div style={{
-        width: 64, height: 64, borderRadius: '50%',
-        background: 'rgba(255,255,255,0.06)',
-        boxShadow: '0 0 0 1px rgba(255,255,255,0.12)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>
-        <Image src={LOGO_URL} alt="" width={50} height={50} priority className="rounded-full object-cover" />
+      {/* Big stroke-to-fill number */}
+      <div style={{ position: 'relative', lineHeight: 1, userSelect: 'none' }}>
+        {/* Outline layer — always visible */}
+        <span style={{
+          fontFamily: 'var(--font-cormorant), Georgia, serif',
+          fontWeight: 300,
+          fontSize: 'clamp(7rem, 22vw, 16rem)',
+          letterSpacing: '-0.02em',
+          color: 'transparent',
+          WebkitTextStroke: '1px rgba(255,255,255,0.18)',
+          display: 'block',
+        }}>
+          {displayed}
+        </span>
+
+        {/* Fill layer — reveals left-to-right based on progress */}
+        <span style={{
+          fontFamily: 'var(--font-cormorant), Georgia, serif',
+          fontWeight: 300,
+          fontSize: 'clamp(7rem, 22vw, 16rem)',
+          letterSpacing: '-0.02em',
+          color: '#FFFFFF',
+          position: 'absolute', inset: 0,
+          clipPath: `inset(0 ${100 - progress}% 0 0)`,
+          transition: 'clip-path 0.06s linear',
+          display: 'block',
+        }}>
+          {displayed}
+        </span>
       </div>
 
-      {/* Brand */}
+      {/* Brand name */}
       <span style={{
         fontFamily: 'var(--font-poppins), sans-serif',
-        fontWeight: 700, fontSize: '0.85rem',
-        letterSpacing: '0.14em', color: '#FFFFFF',
-        marginTop: '20px', textTransform: 'uppercase',
+        fontWeight: 600, fontSize: '0.7rem',
+        letterSpacing: '0.22em', color: '#3A3A40',
+        textTransform: 'uppercase',
       }}>
         HACODE SOLUTIONS
       </span>
 
-      {/* Counter */}
-      <span className="font-jetbrains" style={{
-        fontSize: '0.6rem', color: '#3A3A40',
-        letterSpacing: '0.12em', marginTop: '10px',
-      }}>
-        {String(progress).padStart(3, '0')}
-      </span>
-
-      {/* Progress bar */}
+      {/* Bottom progress line */}
       <div style={{
         position: 'absolute', bottom: 0, left: 0, right: 0,
         height: '1px', background: 'rgba(255,255,255,0.05)',
@@ -402,7 +418,7 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
         <div style={{
           height: '100%',
           width: `${progress}%`,
-          background: 'rgba(255,255,255,0.25)',
+          background: 'rgba(255,255,255,0.22)',
           transition: 'width 0.06s linear',
         }} />
       </div>
