@@ -534,39 +534,53 @@ export default function LandingPage() {
 
   /* ── Fetch + decode audio into memory on mount ── */
   useEffect(() => {
+    const URL = 'https://hacodesolutions.s3.us-east-1.amazonaws.com/mixkit-single-classic-click-1116.wav'
     const load = async () => {
       try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const AC = window.AudioContext ?? (window as any).webkitAudioContext
-        if (!AC) return
+        if (!AC) { setAudioReady(true); return }
         const ctx = new AC()
         audioCtxRef.current = ctx
-        const res = await fetch(
-          'https://hacodesolutions.s3.us-east-1.amazonaws.com/mixkit-single-classic-click-1116.wav',
-          { cache: 'force-cache' }
-        )
+        const res = await fetch(URL, { cache: 'force-cache' })
         const raw = await res.arrayBuffer()
         audioBufferRef.current = await ctx.decodeAudioData(raw)
         setAudioReady(true)
-      } catch { setAudioReady(true) /* fail silently but unblock loader */ }
+      } catch {
+        // CORS not configured — fall back to HTMLAudioElement
+        try {
+          const el = new Audio(URL)
+          el.volume = 0.5
+          el.preload = 'auto'
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          ;(audioCtxRef as any).fallback = el
+        } catch { /* fail silently */ }
+        setAudioReady(true)
+      }
     }
     load()
   }, [])
 
-  /* ── Click sound — zero latency from decoded buffer ── */
+  /* ── Click sound — zero latency from decoded buffer, fallback to Audio element ── */
   const playClick = () => {
     try {
       const ctx = audioCtxRef.current
       const buf = audioBufferRef.current
-      if (!ctx || !buf) return
-      if (ctx.state === 'suspended') ctx.resume()
-      const src  = ctx.createBufferSource()
-      const gain = ctx.createGain()
-      src.buffer = buf
-      gain.gain.value = 0.5
-      src.connect(gain)
-      gain.connect(ctx.destination)
-      src.start(0)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const fallback = (audioCtxRef as any).fallback as HTMLAudioElement | undefined
+      if (ctx && buf) {
+        if (ctx.state === 'suspended') ctx.resume()
+        const src  = ctx.createBufferSource()
+        const gain = ctx.createGain()
+        src.buffer = buf
+        gain.gain.value = 0.5
+        src.connect(gain)
+        gain.connect(ctx.destination)
+        src.start(0)
+      } else if (fallback) {
+        fallback.currentTime = 0
+        fallback.play().catch(() => {})
+      }
     } catch { /* fail silently */ }
   }
   playClickRef.current = playClick
