@@ -360,26 +360,47 @@ export default function LandingPage() {
   const rootRef  = useRef<HTMLDivElement>(null)
   const logoRef  = useRef<HTMLDivElement>(null)
   const gsapRef  = useRef<{ to: (...args: unknown[]) => void } | null>(null)
-  const audioRef = useRef<HTMLAudioElement | null>(null)
+  const audioCtxRef    = useRef<AudioContext | null>(null)
+  const audioBufferRef = useRef<AudioBuffer | null>(null)
   const [hoveredCard, setHoveredCard]   = useState<number | null>(null)
   const [phaseIdx, setPhaseIdx]         = useState(0)
   const [phaseVisible, setPhaseVisible] = useState(true)
   const [ready, setReady]               = useState(false)
 
-  /* ── Preload audio ── */
+  /* ── Fetch + decode audio into memory on mount ── */
   useEffect(() => {
-    const audio = new Audio('https://hacodesolutions.s3.us-east-1.amazonaws.com/mixkit-single-classic-click-1116.wav')
-    audio.volume = 0.5
-    audio.preload = 'auto'
-    audioRef.current = audio
+    const load = async () => {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const AC = window.AudioContext ?? (window as any).webkitAudioContext
+        if (!AC) return
+        const ctx = new AC()
+        audioCtxRef.current = ctx
+        const res = await fetch(
+          'https://hacodesolutions.s3.us-east-1.amazonaws.com/mixkit-single-classic-click-1116.wav',
+          { cache: 'force-cache' }
+        )
+        const raw = await res.arrayBuffer()
+        audioBufferRef.current = await ctx.decodeAudioData(raw)
+      } catch { /* fail silently */ }
+    }
+    load()
   }, [])
 
-  /* ── Click sound ── */
+  /* ── Click sound — zero latency from decoded buffer ── */
   const playClick = () => {
     try {
-      if (!audioRef.current) return
-      audioRef.current.currentTime = 0
-      audioRef.current.play().catch(() => { /* blocked before user gesture */ })
+      const ctx = audioCtxRef.current
+      const buf = audioBufferRef.current
+      if (!ctx || !buf) return
+      if (ctx.state === 'suspended') ctx.resume()
+      const src  = ctx.createBufferSource()
+      const gain = ctx.createGain()
+      src.buffer = buf
+      gain.gain.value = 0.5
+      src.connect(gain)
+      gain.connect(ctx.destination)
+      src.start(0)
     } catch { /* fail silently */ }
   }
 
