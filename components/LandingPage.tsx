@@ -464,6 +464,7 @@ export default function LandingPage() {
   const [ready, setReady]               = useState(false)
   const [gsapLoaded, setGsapLoaded]     = useState(false)
   const [audioReady, setAudioReady]     = useState(false)
+  const [scrolled, setScrolled]         = useState(false)
 
   /* ── Preload GSAP + hide elements immediately (during loading screen) ── */
   useEffect(() => {
@@ -486,6 +487,13 @@ export default function LandingPage() {
     fetch('/click.wav', { cache: 'force-cache' })
       .then(() => setAudioReady(true))
       .catch(() => setAudioReady(true))
+  }, [])
+
+  /* ── Floating navbar scroll trigger ── */
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 80)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
   /* ── Logo hover ── */
@@ -532,6 +540,86 @@ export default function LandingPage() {
   return (
     <>
       {!ready && <LoadingScreen onDone={() => setReady(true)} audioReady={audioReady} />}
+
+      {/* ── Floating navbar ── */}
+      {ready && (
+        <div
+          aria-label="Site navigation"
+          style={{
+            position: 'fixed',
+            top: 16,
+            left: '50%',
+            transform: `translateX(-50%) translateY(${scrolled ? '0px' : '-110%'})`,
+            zIndex: 9000,
+            width: 'calc(100% - 48px)',
+            maxWidth: 740,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 12,
+            padding: '10px 14px 10px 14px',
+            borderRadius: 999,
+            background: 'rgba(10,10,11,0.72)',
+            backdropFilter: 'blur(18px)',
+            WebkitBackdropFilter: 'blur(18px)',
+            border: '1px solid rgba(255,255,255,0.10)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.04) inset',
+            transition: 'transform 0.52s cubic-bezier(0.22,1,0.36,1)',
+            pointerEvents: scrolled ? 'auto' : 'none',
+          }}
+        >
+          {/* Logo + name */}
+          <div className="flex items-center gap-2.5">
+            <div style={{
+              width: 30, height: 30, borderRadius: '50%',
+              background: '#FFFFFF', padding: 3, flexShrink: 0,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <Image src={LOGO_URL} alt="" width={24} height={24} className="rounded-full object-cover" />
+            </div>
+            <span
+              className="text-white leading-none uppercase tracking-[0.1em] text-[0.72rem]"
+              style={{ fontFamily: 'var(--font-jetbrains), monospace', fontWeight: 600 }}
+            >
+              HACODE
+            </span>
+          </div>
+
+          {/* Nav links */}
+          <nav className="hidden sm:flex items-center gap-5">
+            {[
+              { label: 'Products', href: '#products' },
+              { label: 'Trusty Translate', href: '/products/trusty-translate' },
+              { label: 'FindUs BR', href: '/products/findus-br' },
+            ].map(({ label, href }) => (
+              <a
+                key={label}
+                href={href}
+                className="font-jetbrains text-[0.6rem] tracking-[0.08em] uppercase text-[#525258] hover:text-[#EDEDED] transition-colors duration-200"
+              >
+                {label}
+              </a>
+            ))}
+          </nav>
+
+          {/* CTA */}
+          <a
+            href="mailto:hallanfranco@gmail.com?subject=Let's talk — HACODE SOLUTIONS"
+            className="font-jetbrains text-[0.6rem] tracking-[0.08em] uppercase px-3.5 py-1.5 rounded-full transition-all duration-200"
+            style={{
+              background: 'rgba(255,255,255,0.09)',
+              border: '1px solid rgba(255,255,255,0.14)',
+              color: '#EDEDED',
+              flexShrink: 0,
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.16)' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.09)' }}
+          >
+            Contact
+          </a>
+        </div>
+      )}
+
     <div ref={rootRef} className="relative min-h-screen flex flex-col">
       <AuroraBackground />
 
