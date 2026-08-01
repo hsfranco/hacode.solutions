@@ -278,7 +278,7 @@ function PathBox({ n, title, body }: { n: string; title: string; body: string })
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="flex items-start gap-3 px-4 py-3 rounded-lg"
+      className="flex items-start gap-3 px-5 py-5 rounded-xl h-full"
       style={{
         border: `1px solid ${hovered ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.07)'}`,
         background: hovered ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.02)',
@@ -711,14 +711,14 @@ export default function LandingPage() {
         </header>
 
         {/* ── Description ── */}
-        <div className="anim-about w-full max-w-[500px] flex flex-col gap-5">
+        <div className="anim-about w-full max-w-[760px] flex flex-col gap-6">
           <p className="font-inter text-[#A1A1A6] text-[0.9rem] leading-[1.75] text-center">
             We build software with <span className="text-[#EDEDED]">AI</span>, operate it, and sell it.
             Or hand you the exact <span className="text-[#EDEDED]">DevSpecs</span> so you can build it yourself.
           </p>
 
-          {/* Two paths */}
-          <div className="flex flex-col gap-2">
+          {/* Two paths — side by side */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-stretch">
             {[
               {
                 n: '01',
