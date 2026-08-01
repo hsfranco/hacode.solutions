@@ -1,0 +1,42 @@
+# HACODE SOLUTIONS
+
+## Identity
+HACODE SOLUTIONS is an AI-native software company founded on 13 years of professional software development experience. It operates worldwide and remotely, serving businesses and developers who want to leverage AI to build faster and smarter.
+
+## What HACODE SOLUTIONS Does
+HACODE SOLUTIONS builds two categories of products:
+
+1. **Ready-to-Use AI Tools** — Production-ready AI-powered software you can buy and deploy immediately.
+2. **DevSpecs, Prompts & Playbooks** — Expert development specifications, curated prompt packs, and step-by-step guides that let customers replicate HACODE SOLUTIONS workflows using AI coding tools such as Claude Code or Cursor.
+
+## DevSpecs Explained
+DevSpecs are expert development specifications engineered by HACODE SOLUTIONS to be executed by AI, based on 13 years of professional software development. A DevSpec is a comprehensive document containing the exact prompts, architecture decisions, implementation steps, and operational context an AI coding tool needs to build a complete, production-ready software system. Instead of hiring a senior developer, you give the DevSpec to an AI assistant and it builds the system step by step.
+
+## Products
+
+### Ready-to-Use AI Tools
+- **Trusty Translate** — AI-powered translation for global businesses. Fast, accurate, context-aware.
+
+### DevSpecs & Playbooks
+- **DevSpec Starter Bundle** — Complete AI development specification with prompts for building your first AI tool using Claude Code or Cursor.
+- **Ops Automation Playbook** — Step-by-step guide for building smart, AI-powered operations and automation systems.
+- **Prompt Pack Pro** — 50+ battle-tested prompts for AI development workflows, code reviews, and system architecture.
+
+## Technology Stack
+React, Node.js, Express, Python, Vercel, AWS, Claude Code, Cursor
+
+## Who HACODE SOLUTIONS Serves
+Businesses and individual developers who want to use AI to build software faster and at lower cost. Ready-to-use tools require minimal technical knowledge. DevSpecs are designed for those with basic familiarity with AI coding tools.
+
+## Location
+Worldwide / Remote
+
+## Links
+- Website: https://hacode.solutions
+- GitHub: https://github.com/hacode-solutions
+
+## Contact
+Contact via social profiles linked at https://hacode.solutions
+
+## Keywords
+DevSpecs for AI, AI development specifications, AI automation solutions, AI-ready specs, build with AI, AI business automation, Claude Code, Cursor, Next.js, Node.js

@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Aurora ribbon keyframes ───────────────────────────────────────────────── */
+@keyframes aurora-1 {
+  0%,  100% { transform: translateX(0)    translateY(0)    scale(1);    opacity: 0.70; }
+  30%       { transform: translateX(45px)  translateY(-28px) scale(1.07); opacity: 0.85; }
+  65%       { transform: translateX(-22px) translateY(16px)  scale(0.97); opacity: 0.60; }
+}
+@keyframes aurora-2 {
+  0%,  100% { transform: translateX(0)    translateY(0)    rotate(0deg);  opacity: 0.55; }
+  40%       { transform: translateX(-38px) translateY(22px) rotate(4deg);  opacity: 0.70; }
+  78%       { transform: translateX(24px)  translateY(-12px) rotate(-3deg); opacity: 0.48; }
+}
+@keyframes aurora-3 {
+  0%,  100% { transform: translateX(0) scale(1);    opacity: 0.45; }
+  50%       { transform: translateX(32px) scale(1.12); opacity: 0.60; }
+}
+
+.aurora-ribbon-1 { animation: aurora-1 62s ease-in-out infinite; }
+.aurora-ribbon-2 { animation: aurora-2 78s ease-in-out infinite; animation-delay: -24s; }
+.aurora-ribbon-3 { animation: aurora-3 52s ease-in-out infinite; animation-delay: -14s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora-ribbon-1,
+  .aurora-ribbon-2,
+  .aurora-ribbon-3 { animation: none !important; }
+}
+
+/* ── Tech marquee ────────────────────────────────────────────────────────────── */
+@keyframes marquee-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.marquee-track {
+  animation: marquee-scroll 40s linear infinite;
+  will-change: transform;
+}
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none !important; }
+}
+
+/* ── Terminal cursor blink ───────────────────────────────────────────────────── */
+@keyframes cur-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+.cursor-blink { animation: cur-blink 0.72s step-end infinite; }
+
+/* ── Card micro-interaction ─────────────────────────────────────────────────── */
+.product-card {
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.3s ease,
+              box-shadow 0.3s ease;
+}
+.product-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+/* ── CTA button ─────────────────────────────────────────────────────────────── */
+.cta-btn {
+  transition: background-color 0.25s ease, color 0.25s ease, opacity 0.25s ease;
+}
+.cta-btn:hover {
+  background-color: rgba(255, 255, 255, 0.88);
+}
+.cta-btn:focus-visible {
+  outline: 2px solid #FFFFFF;
+  outline-offset: 3px;
+}
+
+/* ── Focus states ───────────────────────────────────────────────────────────── */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid #FFFFFF;
+  outline-offset: 3px;
+  border-radius: 2px;
+}

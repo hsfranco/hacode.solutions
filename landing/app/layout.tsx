@@ -1,0 +1,72 @@
+import type { Metadata } from 'next'
+import { Cormorant_Garamond, Inter, JetBrains_Mono, Poppins } from 'next/font/google'
+import './globals.css'
+
+const cormorant = Cormorant_Garamond({
+  subsets: ['latin'],
+  variable: '--font-cormorant',
+  weight: ['300', '400', '500', '600', '700'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+})
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+})
+
+const poppins = Poppins({
+  subsets: ['latin'],
+  variable: '--font-poppins',
+  weight: ['600', '700', '800'],
+  display: 'swap',
+})
+
+const jetbrains = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-jetbrains',
+  weight: ['400', '500', '600'],
+  display: 'swap',
+})
+
+const LOGO_URL = 'https://hacodesolutions.s3.us-east-1.amazonaws.com/trusty_translate_logo.jpg'
+const SITE_URL = 'https://hacode.solutions'
+const TITLE    = 'HACODE SOLUTIONS — DevSpecs for AI'
+const DESC     = 'AI tools and DevSpecs built on 13 years of engineering. Buy ready-to-use AI tools or the exact specs to build them yourself.'
+
+export const metadata: Metadata = {
+  title: TITLE,
+  description: DESC,
+  metadataBase: new URL(SITE_URL),
+  alternates: { canonical: SITE_URL },
+  keywords: ['DevSpecs for AI', 'AI development specifications', 'AI automation solutions', 'AI tools for business'],
+  openGraph: {
+    type: 'website',
+    url: SITE_URL,
+    siteName: 'HACODE SOLUTIONS',
+    title: TITLE,
+    description: DESC,
+    images: [{ url: LOGO_URL, width: 1200, height: 630, alt: 'HACODE SOLUTIONS — DevSpecs for AI' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: TITLE,
+    description: DESC,
+    images: [LOGO_URL],
+  },
+  robots: { index: true, follow: true },
+}
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en" className={`${cormorant.variable} ${inter.variable} ${jetbrains.variable} ${poppins.variable}`}>
+      <body
+        className="font-inter antialiased overflow-x-hidden"
+        style={{ backgroundColor: '#0A0A0B', color: '#EDEDED' }}
+      >
+        {children}
+      </body>
+    </html>
+  )
+}

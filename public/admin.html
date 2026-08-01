@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>hacode.solutions — Task Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles/output.css" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0a0a0a;
+      --surface: #111111;
+      --surface2: #161616;
+      --border:  #1f1f1f;
+      --border2: #2a2a2a;
+      --primary: #ededed;
+      --muted:   #555555;
+      --muted2:  #333333;
+      --accent:  #ffffff;
+      --success: #22c55e;
+      --danger:  #ef4444;
+      --sidebar-w: 260px;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--primary);
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ─── Scrollbar ─────────────────────────────────── */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+    /* ─── App shell ─────────────────────────────────── */
+    #app {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ─── Sidebar ───────────────────────────────────── */
+    #sidebar {
+      width: var(--sidebar-w);
+      min-width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sidebar-top {
+      padding: 16px 14px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-logo {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--primary);
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 2px;
+    }
+
+    .sidebar-logo-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .sidebar-subtitle {
+      font-size: 11px;
+      color: var(--muted);
+      padding-left: 14px;
+    }
+
+    /* Settings block */
+    .settings-block {
+      padding: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-label {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .folder-display {
+      font-size: 11px;
+      color: var(--muted);
+      word-break: break-all;
+      margin-bottom: 8px;
+      line-height: 1.4;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+
+    .folder-display.unconfigured {
+      color: var(--danger);
+    }
+
+    .folder-input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--primary);
+      font-size: 11px;
+      padding: 7px 10px;
+      outline: none;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      transition: border-color 0.15s;
+      margin-bottom: 8px;
+    }
+    .folder-input::placeholder { color: var(--muted2); }
+    .folder-input:focus { border-color: var(--border2); }
+
+    .folder-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-sm {
+      font-size: 11px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      padding: 5px 10px;
+      border: 1px solid var(--border2);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .btn-sm:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-sm:disabled { opacity: 0.3; cursor: default; }
+    .btn-sm.primary { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+    .btn-sm.primary:hover { opacity: 0.85; }
+
+    .folder-feedback {
+      font-size: 11px;
+      margin-top: 6px;
+      min-height: 14px;
+    }
+
+    /* Tasks list */
+    #task-list-section {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      padding: 14px;
+    }
+
+    .tasks-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .task-count-badge {
+      font-size: 10px;
+      color: var(--muted2);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .refresh-btn {
+      background: none;
+      border: none;
+      color: var(--muted2);
+      cursor: pointer;
+      font-size: 13px;
+      line-height: 1;
+      padding: 2px;
+      transition: color 0.15s;
+    }
+    .refresh-btn:hover { color: var(--primary); }
+
+    #task-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 4px;
+      cursor: default;
+      transition: background 0.1s;
+    }
+    .task-item:hover { background: var(--surface2); }
+
+    .task-num {
+      font-size: 10px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      color: var(--muted2);
+      min-width: 22px;
+      flex-shrink: 0;
+    }
+
+    .task-title {
+      font-size: 12px;
+      color: var(--muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+      transition: color 0.15s;
+    }
+    .task-item:hover .task-title { color: var(--primary); }
+    .task-item:hover .task-num   { color: var(--muted); }
+
+    .task-list-empty {
+      font-size: 11px;
+      color: var(--muted2);
+      padding: 8px;
+      text-align: center;
+    }
+
+    /* Home link at bottom of sidebar */
+    .sidebar-footer {
+      padding: 12px 14px;
+      border-top: 1px solid var(--border);
+    }
+    .sidebar-footer a {
+      font-size: 12px;
+      color: var(--muted);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.15s;
+    }
+    .sidebar-footer a:hover { color: var(--primary); }
+
+    /* ─── Main chat area ────────────────────────────── */
+    #main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    /* ─── Chat thread ───────────────────────────────── */
+    #chat-thread {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-welcome {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* Message rows */
+    .msg-row {
+      width: 100%;
+      padding: 20px 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .msg-row.user { background: transparent; }
+    .msg-row.assistant { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+    .msg-inner {
+      width: 100%;
+      max-width: 720px;
+      padding: 0 40px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    /* Avatar */
+    .msg-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 1px;
+    }
+    .msg-avatar.user-avatar {
+      background: var(--border2);
+      color: var(--primary);
+    }
+    .msg-avatar.ai-avatar {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    .msg-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .msg-role {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 6px;
+      letter-spacing: 0.02em;
+    }
+
+    .msg-text {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--primary);
+    }
+
+    .msg-text.user-text {
+      color: var(--primary);
+    }
+
+    /* Markdown in assistant messages */
+    .markdown-body h1, .markdown-body h2, .markdown-body h3 {
+      font-weight: 500;
+      color: var(--primary);
+      margin: 18px 0 8px;
+      line-height: 1.3;
+    }
+    .markdown-body h1 { font-size: 17px; }
+    .markdown-body h2 { font-size: 15px; }
+    .markdown-body h3 { font-size: 14px; }
+    .markdown-body p { margin: 8px 0; color: var(--primary); }
+    .markdown-body ul, .markdown-body ol {
+      margin: 8px 0 8px 20px;
+      color: var(--primary);
+    }
+    .markdown-body li { margin: 3px 0; }
+    .markdown-body a { color: var(--primary); text-decoration: underline; opacity: 0.7; }
+
+    .markdown-body code {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 12px;
+      background: var(--bg);
+      border: 1px solid var(--border2);
+      padding: 1px 6px;
+      border-radius: 3px;
+      color: #c8d3f5;
+    }
+    .markdown-body pre {
+      background: var(--bg);
+      border: 1px solid var(--border2);
+      padding: 14px 16px;
+      overflow-x: auto;
+      margin: 12px 0;
+      border-radius: 4px;
+    }
+    .markdown-body pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 12.5px;
+      color: var(--primary);
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--border2);
+      padding-left: 12px;
+      color: var(--muted);
+      margin: 8px 0;
+    }
+    .markdown-body hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 16px 0;
+    }
+    .markdown-body strong { color: var(--primary); font-weight: 600; }
+
+    /* Timestamp + save status */
+    .msg-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+    .msg-ts {
+      font-size: 11px;
+      color: var(--muted2);
+    }
+    .save-inline-feedback {
+      font-size: 11px;
+      color: var(--success);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .save-inline-error {
+      font-size: 11px;
+      color: var(--danger);
+    }
+    .save-saving {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* Thinking */
+    #thinking-indicator {
+      display: none;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      width: 100%;
+      padding: 16px 0;
+    }
+
+    .thinking-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 40px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .thinking-dots {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+    .thinking-dots span {
+      width: 5px;
+      height: 5px;
+      background: var(--muted);
+      border-radius: 50%;
+      animation: dot-pulse 1.4s ease-in-out infinite;
+    }
+    .thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes dot-pulse {
+      0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+      40%           { opacity: 1;   transform: scale(1); }
+    }
+
+    /* ─── Fade-in for messages ──────────────────────── */
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .msg-row {
+      animation: fade-up 0.22s ease forwards;
+    }
+
+    /* ─── Task delete button ─────────────────────────── */
+    .task-delete {
+      background: none;
+      border: none;
+      color: transparent;
+      cursor: pointer;
+      font-size: 13px;
+      line-height: 1;
+      padding: 2px 4px;
+      margin-left: auto;
+      flex-shrink: 0;
+      transition: color 0.15s;
+      border-radius: 3px;
+    }
+    .task-item:hover .task-delete { color: var(--muted2); }
+    .task-delete:hover { color: var(--danger) !important; background: rgba(239,68,68,0.08); }
+
+    /* ─── Input area ────────────────────────────────── */
+    #input-area {
+      padding: 16px 0 20px;
+      display: flex;
+      justify-content: center;
+      background: var(--bg);
+    }
+
+    .input-wrapper {
+      width: 100%;
+      max-width: 720px;
+      padding: 0 40px;
+    }
+
+    .input-box {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      display: flex;
+      align-items: flex-end;
+      gap: 0;
+      transition: border-color 0.15s;
+    }
+    .input-box:focus-within { border-color: #3a3a3a; }
+
+    #user-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--primary);
+      font-size: 14px;
+      padding: 13px 16px;
+      outline: none;
+      font-family: 'Inter', sans-serif;
+      resize: none;
+      line-height: 1.5;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    #user-input::placeholder { color: var(--muted2); }
+
+    #send-btn {
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      border-radius: 6px;
+      width: 32px;
+      height: 32px;
+      margin: 8px 8px 8px 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: opacity 0.15s;
+    }
+    #send-btn:hover { opacity: 0.85; }
+    #send-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+    #send-btn svg { width: 14px; height: 14px; }
+
+    .input-hint {
+      font-size: 11px;
+      color: var(--muted2);
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    /* ─── Task preview modal ────────────────────────── */
+    #preview-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(2px);
+    }
+    #preview-backdrop.open { display: flex; }
+
+    #preview-modal {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      width: 680px;
+      max-width: 92vw;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+      animation: fade-up 0.18s ease forwards;
+    }
+
+    #preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      flex-shrink: 0;
+    }
+
+    #preview-filename {
+      font-size: 12px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      color: var(--muted);
+    }
+
+    #preview-close-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1;
+      padding: 2px 6px;
+      border-radius: 3px;
+      transition: color 0.15s, background 0.15s;
+    }
+    #preview-close-btn:hover { color: var(--primary); background: var(--border); }
+
+    #preview-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 28px;
+    }
+
+    /* Reuse markdown-body styles */
+    #preview-body h1, #preview-body h2, #preview-body h3 {
+      font-weight: 500;
+      color: var(--primary);
+      margin: 18px 0 8px;
+      line-height: 1.3;
+    }
+    #preview-body h1 { font-size: 18px; margin-top: 0; }
+    #preview-body h2 { font-size: 15px; }
+    #preview-body h3 { font-size: 14px; }
+    #preview-body p  { margin: 8px 0; color: var(--primary); line-height: 1.7; font-size: 14px; }
+    #preview-body ul, #preview-body ol { margin: 8px 0 8px 20px; color: var(--primary); font-size: 14px; }
+    #preview-body li { margin: 4px 0; }
+    #preview-body code {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 12px;
+      background: var(--bg);
+      border: 1px solid var(--border2);
+      padding: 1px 6px;
+      border-radius: 3px;
+      color: #c8d3f5;
+    }
+    #preview-body pre {
+      background: var(--bg);
+      border: 1px solid var(--border2);
+      padding: 14px 16px;
+      overflow-x: auto;
+      margin: 12px 0;
+      border-radius: 4px;
+    }
+    #preview-body pre code { background: none; border: none; padding: 0; color: var(--primary); }
+    #preview-body hr { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+    #preview-body strong { font-weight: 600; }
+    #preview-body input[type="checkbox"] { accent-color: var(--accent); margin-right: 6px; }
+    #preview-body li.task-list-item { list-style: none; margin-left: -20px; }
+
+    /* ─── Folder picker modal ───────────────────────── */
+    #picker-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(2px);
+    }
+    #picker-backdrop.open { display: flex; }
+
+    #picker-modal {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      width: 520px;
+      max-height: 460px;
+      display: flex;
+      flex-direction: column;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+    }
+
+    #picker-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+
+    #picker-up-btn {
+      background: none;
+      border: 1px solid var(--border2);
+      color: var(--muted);
+      font-size: 11px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      border-radius: 3px;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    #picker-up-btn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+    #picker-up-btn:disabled { opacity: 0.25; cursor: default; }
+
+    #picker-current-path {
+      flex: 1;
+      font-size: 11px;
+      color: var(--muted);
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      word-break: break-all;
+    }
+
+    #picker-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 6px 0;
+    }
+
+    .picker-dir {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      font-size: 13px;
+      color: var(--primary);
+      cursor: pointer;
+      transition: background 0.1s;
+      user-select: none;
+    }
+    .picker-dir:hover { background: var(--surface2); }
+    .picker-dir.selected { background: #1c1c1c; }
+
+    .picker-dir-icon {
+      font-size: 13px;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    #picker-empty {
+      padding: 24px;
+      font-size: 12px;
+      color: var(--muted2);
+      text-align: center;
+    }
+
+    #picker-footer {
+      display: flex;
+      gap: 8px;
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      align-items: center;
+      background: var(--bg);
+    }
+
+    #picker-selected-label {
+      flex: 1;
+      font-size: 11px;
+      color: var(--muted);
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      word-break: break-all;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ── Sidebar ── -->
+  <aside id="sidebar">
+
+    <div class="sidebar-top">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-dot"></div>
+        hacode.solutions
+      </div>
+      <div class="sidebar-subtitle">Task Builder</div>
+    </div>
+
+    <!-- Settings -->
+    <div class="settings-block">
+      <div class="section-label">Workspace</div>
+      <div class="folder-display" id="current-folder-display">Loading...</div>
+      <input
+        type="text"
+        id="folder-input"
+        class="folder-input"
+        placeholder="/path/to/tasks"
+      />
+      <div class="folder-actions">
+        <button class="btn-sm" id="browse-folder-btn">Browse</button>
+        <button class="btn-sm primary" id="save-folder-btn">Save</button>
+      </div>
+      <div class="folder-feedback" id="folder-feedback"></div>
+    </div>
+
+    <!-- Task list -->
+    <div id="task-list-section">
+      <div class="tasks-header">
+        <span class="section-label" style="margin-bottom:0;">Tasks <span class="task-count-badge" id="task-count"></span></span>
+        <button class="refresh-btn" id="refresh-tasks-btn" title="Refresh" onclick="loadTaskList()">↺</button>
+      </div>
+      <div id="task-list"></div>
+    </div>
+
+    <div class="sidebar-footer">
+      <a href="/">← Back to home</a>
+    </div>
+
+  </aside>
+
+  <!-- ── Main ── -->
+  <main id="main">
+    <div id="chat-thread"></div>
+    <div id="thinking-indicator">
+      <div class="thinking-inner">
+        <div class="msg-avatar ai-avatar">H</div>
+        <div class="thinking-dots">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+    <div id="input-area">
+      <div class="input-wrapper">
+        <div class="input-box">
+          <textarea
+            id="user-input"
+            rows="1"
+            placeholder="Describe a task you want to build…"
+          ></textarea>
+          <button id="send-btn" title="Send (Enter)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="19" x2="12" y2="5"/>
+              <polyline points="5 12 12 5 19 12"/>
+            </svg>
+          </button>
+        </div>
+        <div class="input-hint">Enter to send · Shift+Enter for new line</div>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<!-- Task preview modal -->
+<div id="preview-backdrop">
+  <div id="preview-modal">
+    <div id="preview-header">
+      <span id="preview-filename"></span>
+      <button id="preview-close-btn" title="Close">✕</button>
+    </div>
+    <div id="preview-body"></div>
+  </div>
+</div>
+
+<!-- Folder picker modal -->
+<div id="picker-backdrop">
+  <div id="picker-modal">
+    <div id="picker-header">
+      <button id="picker-up-btn" disabled>↑ Up</button>
+      <span id="picker-current-path">/</span>
+    </div>
+    <div id="picker-list"></div>
+    <div id="picker-footer">
+      <span id="picker-selected-label">—</span>
+      <button class="btn-sm" id="picker-cancel-btn">Cancel</button>
+      <button class="btn-sm primary" id="picker-select-btn">Select folder</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── State ──────────────────────────────────────────────────────────────────
+  const messages = [];
+  let lastDraftContent = null;
+  let isWaiting = false;
+  let pickerSelectedPath = null;
+
+  // ── Elements ───────────────────────────────────────────────────────────────
+  const chatThread        = document.getElementById('chat-thread');
+  const userInput         = document.getElementById('user-input');
+  const sendBtn           = document.getElementById('send-btn');
+  const thinkingEl        = document.getElementById('thinking-indicator');
+  const taskList          = document.getElementById('task-list');
+  const folderInput       = document.getElementById('folder-input');
+  const saveFolderBtn     = document.getElementById('save-folder-btn');
+  const browseFolderBtn   = document.getElementById('browse-folder-btn');
+  const folderFeedback    = document.getElementById('folder-feedback');
+  const currentFolderEl   = document.getElementById('current-folder-display');
+  const pickerBackdrop    = document.getElementById('picker-backdrop');
+  const pickerList        = document.getElementById('picker-list');
+  const pickerCurrentPath = document.getElementById('picker-current-path');
+  const pickerUpBtn       = document.getElementById('picker-up-btn');
+  const pickerSelectBtn   = document.getElementById('picker-select-btn');
+  const pickerCancelBtn   = document.getElementById('picker-cancel-btn');
+  const pickerSelectedLabel = document.getElementById('picker-selected-label');
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+  function formatTime(date) {
+    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+  }
+
+  function scrollToBottom() {
+    chatThread.scrollTop = chatThread.scrollHeight;
+  }
+
+  function setWaiting(val) {
+    isWaiting = val;
+    sendBtn.disabled = val;
+    userInput.disabled = val;
+    thinkingEl.style.display = val ? 'block' : 'none';
+    if (val) scrollToBottom();
+  }
+
+  // ── Folder picker ──────────────────────────────────────────────────────────
+  let pickerCurrentDir = null;
+  let pickerParentDir = null;
+
+  async function pickerNavigate(dirPath) {
+    pickerList.innerHTML = '<div id="picker-empty">Loading…</div>';
+    try {
+      const r = await fetch(`/api/fs/browse?path=${encodeURIComponent(dirPath)}`);
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error);
+
+      pickerCurrentDir = data.current;
+      pickerParentDir = data.parent;
+      pickerCurrentPath.textContent = data.current;
+      pickerUpBtn.disabled = !data.parent;
+
+      pickerSelectedPath = data.current;
+      pickerSelectedLabel.textContent = data.current;
+
+      pickerList.innerHTML = '';
+      if (data.dirs.length === 0) {
+        pickerList.innerHTML = '<div id="picker-empty">No subfolders</div>';
+        return;
+      }
+
+      for (const dir of data.dirs) {
+        const el = document.createElement('div');
+        el.className = 'picker-dir';
+        el.innerHTML = `<span class="picker-dir-icon">📁</span><span>${dir.name}</span>`;
+        el.addEventListener('click', () => {
+          document.querySelectorAll('.picker-dir').forEach(d => d.classList.remove('selected'));
+          el.classList.add('selected');
+          pickerSelectedPath = dir.path;
+          pickerSelectedLabel.textContent = dir.path;
+        });
+        el.addEventListener('dblclick', () => pickerNavigate(dir.path));
+        pickerList.appendChild(el);
+      }
+    } catch (err) {
+      pickerList.innerHTML = `<div id="picker-empty" style="color:var(--danger)">${err.message}</div>`;
+    }
+  }
+
+  browseFolderBtn.addEventListener('click', async () => {
+    const startPath = folderInput.value.trim() || null;
+    pickerBackdrop.classList.add('open');
+    await pickerNavigate(startPath || '~');
+  });
+
+  pickerUpBtn.addEventListener('click', () => {
+    if (pickerParentDir) pickerNavigate(pickerParentDir);
+  });
+
+  pickerCancelBtn.addEventListener('click', () => pickerBackdrop.classList.remove('open'));
+
+  pickerBackdrop.addEventListener('click', (e) => {
+    if (e.target === pickerBackdrop) pickerBackdrop.classList.remove('open');
+  });
+
+  pickerSelectBtn.addEventListener('click', () => {
+    if (pickerSelectedPath) {
+      folderInput.value = pickerSelectedPath;
+      folderFeedback.textContent = '';
+    }
+    pickerBackdrop.classList.remove('open');
+  });
+
+  // ── Auto-save ──────────────────────────────────────────────────────────────
+  function extractTitle(content) {
+    const m = content.match(/^#\s+Task\s+\d+\s+[—–-]+\s+(.+)/m)
+           || content.match(/^#\s+(.+)/m);
+    return m ? m[1].trim() : 'untitled';
+  }
+
+  async function autoSaveTask(content, wrapper) {
+    const title = extractTitle(content);
+    const metaEl = wrapper.querySelector('.msg-meta');
+    const saveStatus = document.createElement('span');
+    saveStatus.className = 'save-saving';
+    saveStatus.textContent = 'Saving…';
+    metaEl.appendChild(saveStatus);
+    scrollToBottom();
+
+    try {
+      const r = await fetch('/api/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content, title }),
+      });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || 'Save failed');
+      saveStatus.className = 'save-inline-feedback';
+      saveStatus.innerHTML = `✓ Saved as <code style="font-size:10px;background:rgba(34,197,94,0.1);padding:1px 5px;border-radius:2px;color:var(--success)">${data.filename}</code>`;
+      await loadTaskList();
+    } catch (err) {
+      saveStatus.className = 'save-inline-error';
+      saveStatus.textContent = `⚠ ${err.message}`;
+    }
+  }
+
+  // ── Chat rendering ─────────────────────────────────────────────────────────
+  function appendMessage(role, text) {
+    const row = document.createElement('div');
+    row.className = `msg-row ${role}`;
+
+    const inner = document.createElement('div');
+    inner.className = 'msg-inner';
+
+    const avatar = document.createElement('div');
+    avatar.className = `msg-avatar ${role === 'user' ? 'user-avatar' : 'ai-avatar'}`;
+    avatar.textContent = role === 'user' ? 'Y' : 'H';
+
+    const content = document.createElement('div');
+    content.className = 'msg-content';
+
+    const roleLabel = document.createElement('div');
+    roleLabel.className = 'msg-role';
+    roleLabel.textContent = role === 'user' ? 'You' : 'hacode AI';
+
+    const textEl = document.createElement('div');
+    textEl.className = `msg-text ${role === 'user' ? 'user-text' : ''}`;
+
+    if (role === 'assistant') {
+      const mdBody = document.createElement('div');
+      mdBody.className = 'markdown-body';
+      mdBody.innerHTML = marked.parse(text);
+      textEl.appendChild(mdBody);
+    } else {
+      textEl.textContent = text;
+    }
+
+    const meta = document.createElement('div');
+    meta.className = 'msg-meta';
+
+    const ts = document.createElement('span');
+    ts.className = 'msg-ts';
+    ts.textContent = formatTime(new Date());
+    meta.appendChild(ts);
+
+    content.appendChild(roleLabel);
+    content.appendChild(textEl);
+    content.appendChild(meta);
+    inner.appendChild(avatar);
+    inner.appendChild(content);
+    row.appendChild(inner);
+    chatThread.appendChild(row);
+    scrollToBottom();
+    return row;
+  }
+
+  // ── Send message ───────────────────────────────────────────────────────────
+  async function sendMessage() {
+    const text = userInput.value.trim();
+    if (!text || isWaiting) return;
+
+    userInput.value = '';
+    userInput.style.height = 'auto';
+
+    messages.push({ role: 'user', content: text });
+    appendMessage('user', text);
+    setWaiting(true);
+
+    try {
+      const r = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages }),
+      });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || 'Chat failed');
+
+      let reply = data.reply;
+      const isReady = reply.includes('<!-- TASK_READY -->');
+
+      if (isReady) {
+        lastDraftContent = reply.replace('<!-- TASK_READY -->', '').trim();
+        reply = lastDraftContent;
+      }
+
+      messages.push({ role: 'assistant', content: reply });
+      const wrapper = appendMessage('assistant', reply);
+
+      if (isReady) {
+        await autoSaveTask(lastDraftContent, wrapper);
+      }
+    } catch (err) {
+      appendMessage('assistant', `Error: ${err.message}`);
+    } finally {
+      setWaiting(false);
+      scrollToBottom();
+    }
+  }
+
+  userInput.addEventListener('input', () => {
+    userInput.style.height = 'auto';
+    userInput.style.height = Math.min(userInput.scrollHeight, 200) + 'px';
+  });
+
+  userInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  sendBtn.addEventListener('click', sendMessage);
+
+  // ── Config ─────────────────────────────────────────────────────────────────
+  async function loadConfig() {
+    try {
+      const r = await fetch('/api/config');
+      const data = await r.json();
+      if (data.tasksFolder) {
+        currentFolderEl.textContent = data.tasksFolder;
+        currentFolderEl.classList.remove('unconfigured');
+        folderInput.value = data.tasksFolder;
+      } else {
+        currentFolderEl.textContent = 'Not configured';
+        currentFolderEl.classList.add('unconfigured');
+      }
+    } catch (_) {
+      currentFolderEl.textContent = 'Error loading config';
+    }
+  }
+
+  saveFolderBtn.addEventListener('click', async () => {
+    const tasksFolder = folderInput.value.trim();
+    if (!tasksFolder) return;
+    saveFolderBtn.disabled = true;
+    folderFeedback.textContent = '';
+    try {
+      const r = await fetch('/api/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tasksFolder }),
+      });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || 'Save failed');
+      folderFeedback.style.color = 'var(--success)';
+      folderFeedback.textContent = '✓ Saved';
+      currentFolderEl.classList.remove('unconfigured');
+      currentFolderEl.textContent = data.tasksFolder;
+      await loadTaskList();
+    } catch (err) {
+      folderFeedback.style.color = 'var(--danger)';
+      folderFeedback.textContent = err.message;
+    } finally {
+      saveFolderBtn.disabled = false;
+    }
+  });
+
+  // ── Task preview ───────────────────────────────────────────────────────────
+  const previewBackdrop  = document.getElementById('preview-backdrop');
+  const previewFilename  = document.getElementById('preview-filename');
+  const previewBody      = document.getElementById('preview-body');
+  const previewCloseBtn  = document.getElementById('preview-close-btn');
+
+  async function openPreview(filename) {
+    previewFilename.textContent = filename;
+    previewBody.innerHTML = '<p style="color:var(--muted);font-size:13px;">Loading…</p>';
+    previewBackdrop.classList.add('open');
+    try {
+      const r = await fetch(`/api/tasks/${encodeURIComponent(filename)}`);
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error);
+      previewBody.innerHTML = marked.parse(data.content);
+    } catch (err) {
+      previewBody.innerHTML = `<p style="color:var(--danger)">${err.message}</p>`;
+    }
+  }
+
+  previewCloseBtn.addEventListener('click', () => previewBackdrop.classList.remove('open'));
+  previewBackdrop.addEventListener('click', (e) => {
+    if (e.target === previewBackdrop) previewBackdrop.classList.remove('open');
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') previewBackdrop.classList.remove('open');
+  });
+
+  // ── Task list ──────────────────────────────────────────────────────────────
+  const taskCountEl = document.getElementById('task-count');
+
+  async function loadTaskList() {
+    taskList.innerHTML = '';
+    try {
+      const r = await fetch('/api/tasks');
+      const data = await r.json();
+
+      if (!data.configured) {
+        taskCountEl.textContent = '';
+        taskList.innerHTML = '<div class="task-list-empty">No folder configured</div>';
+        return;
+      }
+
+      if (data.tasks.length === 0) {
+        taskCountEl.textContent = '';
+        taskList.innerHTML = '<div class="task-list-empty">No tasks yet</div>';
+        return;
+      }
+
+      taskCountEl.textContent = `${data.tasks.length}`;
+
+      for (const task of data.tasks) {
+        const el = document.createElement('div');
+        el.className = 'task-item';
+        el.title = task.filename;
+        el.style.cursor = 'pointer';
+        el.addEventListener('click', () => openPreview(task.filename));
+
+        const num = document.createElement('span');
+        num.className = 'task-num';
+        num.textContent = task.number || '—';
+
+        const title = document.createElement('span');
+        title.className = 'task-title';
+        title.textContent = task.title;
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'task-delete';
+        delBtn.title = `Delete ${task.filename}`;
+        delBtn.textContent = '✕';
+        delBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          if (!confirm(`Delete ${task.filename}?`)) return;
+          try {
+            const r = await fetch(`/api/tasks/${encodeURIComponent(task.filename)}`, { method: 'DELETE' });
+            const d = await r.json();
+            if (!r.ok) throw new Error(d.error);
+            el.style.animation = 'none';
+            el.style.transition = 'opacity 0.2s, transform 0.2s';
+            el.style.opacity = '0';
+            el.style.transform = 'translateX(-8px)';
+            setTimeout(() => { el.remove(); loadTaskList(); }, 200);
+          } catch (err) {
+            alert(`Failed to delete: ${err.message}`);
+          }
+        });
+
+        el.appendChild(num);
+        el.appendChild(title);
+        el.appendChild(delBtn);
+        taskList.appendChild(el);
+      }
+    } catch (_) {
+      taskList.innerHTML = '<div class="task-list-empty" style="color:var(--danger)">Error loading</div>';
+    }
+  }
+
+  // ── Init ───────────────────────────────────────────────────────────────────
+  (async () => {
+    await Promise.all([loadConfig(), loadTaskList()]);
+    appendMessage('assistant', "What task do you want to build today? Give me a brief idea and I'll help you flesh it out.");
+    userInput.focus();
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+node_modules/
+.env
+.env.local
+.env*.local
+public/styles/output.css
+.DS_Store
+
+# Next.js build output
+.next/
+out/
+
+# TypeScript build info
+*.tsbuildinfo

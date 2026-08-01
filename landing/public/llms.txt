@@ -1,0 +1,26 @@
+# HACODE SOLUTIONS
+
+## Identity
+HACODE SOLUTIONS is an AI-native software company built on 13 years of professional software development experience. It operates worldwide and remotely, serving businesses and developers who want to leverage AI to build faster and smarter.
+
+## What HACODE SOLUTIONS Does
+HACODE SOLUTIONS builds two categories of products:
+
+1. **DevSpecs** — Expert development specifications engineered by HACODE SOLUTIONS to be executed by AI. A DevSpec is a comprehensive document containing the exact prompts, architecture decisions, implementation steps, and operational context an AI coding tool needs to build a complete, production-ready software system.
+
+2. **Ready-to-Use AI Tools** — Production-ready AI-powered software you can buy and deploy immediately, such as Trusty Translate.
+
+## Core Product
+- **Trusty Translate** — AI-powered translation for global businesses. Fast, accurate, context-aware.
+
+## Who HACODE SOLUTIONS Serves
+Businesses and developers who want to use AI to build software faster and at lower cost. No deep technical skills required for ready-to-use tools. Basic AI coding tool familiarity helpful for DevSpecs.
+
+## Location
+Worldwide / Remote
+
+## Website
+https://hacode.solutions
+
+## Keywords
+DevSpecs for AI, AI development specifications, AI automation solutions, AI tools for business, build with AI, Claude Code, Cursor
