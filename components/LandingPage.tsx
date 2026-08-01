@@ -458,15 +458,12 @@ export default function LandingPage() {
   const rootRef  = useRef<HTMLDivElement>(null)
   const logoRef  = useRef<HTMLDivElement>(null)
   const gsapRef  = useRef<{ to: (...args: unknown[]) => void } | null>(null)
-  const audioCtxRef    = useRef<AudioContext | null>(null)
-  const audioBufferRef = useRef<AudioBuffer | null>(null)
   const [hoveredCard, setHoveredCard]   = useState<number | null>(null)
   const [phaseIdx, setPhaseIdx]         = useState(0)
   const [phaseVisible, setPhaseVisible] = useState(true)
   const [ready, setReady]               = useState(false)
   const [gsapLoaded, setGsapLoaded]     = useState(false)
   const [audioReady, setAudioReady]     = useState(false)
-  const playClickRef = useRef<() => void>(() => {})
 
   /* ── Preload GSAP + hide elements immediately (during loading screen) ── */
   useEffect(() => {
@@ -484,81 +481,11 @@ export default function LandingPage() {
     })
   }, [])
 
-  /* ── Fetch + decode audio into memory on mount ── */
+  /* ── Audio ready gate for loading screen (fetch only, no playback here) ── */
   useEffect(() => {
-    const URL = '/click.wav'
-    const load = async () => {
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const AC = window.AudioContext ?? (window as any).webkitAudioContext
-        if (!AC) { setAudioReady(true); return }
-        const ctx = new AC()
-        audioCtxRef.current = ctx
-        const res = await fetch(URL, { cache: 'force-cache' })
-        const raw = await res.arrayBuffer()
-        audioBufferRef.current = await ctx.decodeAudioData(raw)
-        setAudioReady(true)
-      } catch {
-        // CORS not configured — fall back to HTMLAudioElement
-        try {
-          const el = new Audio(URL)
-          el.volume = 0.5
-          el.preload = 'auto'
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          ;(audioCtxRef as any).fallback = el
-        } catch { /* fail silently */ }
-        setAudioReady(true)
-      }
-    }
-    load()
-  }, [])
-
-  /* ── Click sound — zero latency from decoded buffer, fallback to Audio element ── */
-  const playClick = () => {
-    try {
-      const ctx = audioCtxRef.current
-      const buf = audioBufferRef.current
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const fallback = (audioCtxRef as any).fallback as HTMLAudioElement | undefined
-      if (ctx && buf) {
-        if (ctx.state === 'suspended') ctx.resume()
-        const src  = ctx.createBufferSource()
-        const gain = ctx.createGain()
-        src.buffer = buf
-        gain.gain.value = 0.5
-        src.connect(gain)
-        gain.connect(ctx.destination)
-        src.start(0)
-      } else if (fallback) {
-        fallback.currentTime = 0
-        fallback.play().catch(() => {})
-      }
-    } catch { /* fail silently */ }
-  }
-  playClickRef.current = playClick
-
-  /* ── Global hover sound on all interactive elements ── */
-  useEffect(() => {
-    const SELECTOR = 'a, button, article, [role="button"], .marquee-track > div'
-    let lastEl: Element | null = null
-
-    const onOver = (e: MouseEvent) => {
-      const target = (e.target as Element).closest(SELECTOR)
-      if (target && target !== lastEl) {
-        lastEl = target
-        playClickRef.current()
-      }
-    }
-    const onOut = (e: MouseEvent) => {
-      if ((e.target as Element).closest(SELECTOR) === lastEl) lastEl = null
-    }
-
-    document.addEventListener('mouseover', onOver, { passive: true })
-    document.addEventListener('mouseout',  onOut,  { passive: true })
-    return () => {
-      document.removeEventListener('mouseover', onOver)
-      document.removeEventListener('mouseout',  onOut)
-    }
+    fetch('/click.wav', { cache: 'force-cache' })
+      .then(() => setAudioReady(true))
+      .catch(() => setAudioReady(true))
   }, [])
 
   /* ── Logo hover ── */
@@ -710,7 +637,7 @@ export default function LandingPage() {
               {/* Card 1 — Trusty Translate */}
               <li className="flex">
                 <article
-                  onMouseEnter={() => { setHoveredCard(0); playClick() }}
+                  onMouseEnter={() => setHoveredCard(0)}
                   onMouseLeave={() => setHoveredCard(null)}
                   className="relative overflow-hidden w-full"
                   style={{
@@ -795,7 +722,7 @@ export default function LandingPage() {
               {/* Card 2 — FindUs BR */}
               <li className="flex">
                 <article
-                  onMouseEnter={() => { setHoveredCard(1); playClick() }}
+                  onMouseEnter={() => setHoveredCard(1)}
                   onMouseLeave={() => setHoveredCard(null)}
                   className="relative overflow-hidden w-full"
                   style={{

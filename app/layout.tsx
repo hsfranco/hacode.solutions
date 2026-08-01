@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Cormorant_Garamond, Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import CustomCursor from '@/components/CustomCursor'
+import HoverSound from '@/components/HoverSound'
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -65,6 +66,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         style={{ backgroundColor: '#0A0A0B', color: '#EDEDED' }}
       >
         <CustomCursor />
+        <HoverSound />
         {children}
       </body>
     </html>
