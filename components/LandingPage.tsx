@@ -639,14 +639,14 @@ export default function LandingPage() {
         {/* ── Cards ── */}
         <main className="anim-card w-full max-w-[980px]">
           <section aria-label="Products">
-            <ul role="list" className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <ul role="list" className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-stretch">
 
               {/* Card 1 — Trusty Translate */}
-              <li>
+              <li className="flex">
                 <article
                   onMouseEnter={() => { setHoveredCard(0); playClick() }}
                   onMouseLeave={() => setHoveredCard(null)}
-                  className="relative overflow-hidden"
+                  className="relative overflow-hidden w-full"
                   style={{
                     borderRadius: '14px',
                     border: `1px solid ${hoveredCard === 0 ? 'rgba(255,255,255,0.28)' : 'rgba(255,255,255,0.11)'}`,
@@ -656,7 +656,7 @@ export default function LandingPage() {
                     transform: hoveredCard === 0 ? 'translateY(-4px)' : 'translateY(0)',
                     transition: 'border-color 0.3s ease, box-shadow 0.35s ease, transform 0.38s cubic-bezier(0.22,1,0.36,1)',
                     cursor: 'default',
-                    minHeight: '210px',
+                    minHeight: '240px',
                   }}
                 >
                   <div aria-hidden="true" style={{
@@ -724,11 +724,11 @@ export default function LandingPage() {
               </li>
 
               {/* Card 2 — FindUs BR */}
-              <li>
+              <li className="flex">
                 <article
                   onMouseEnter={() => { setHoveredCard(1); playClick() }}
                   onMouseLeave={() => setHoveredCard(null)}
-                  className="relative overflow-hidden"
+                  className="relative overflow-hidden w-full"
                   style={{
                     borderRadius: '14px',
                     border: `1px solid ${hoveredCard === 1 ? 'rgba(255,255,255,0.28)' : 'rgba(255,255,255,0.11)'}`,
@@ -738,7 +738,7 @@ export default function LandingPage() {
                     transform: hoveredCard === 1 ? 'translateY(-4px)' : 'translateY(0)',
                     transition: 'border-color 0.3s ease, box-shadow 0.35s ease, transform 0.38s cubic-bezier(0.22,1,0.36,1)',
                     cursor: 'default',
-                    minHeight: '210px',
+                    minHeight: '240px',
                   }}
                 >
                   <div aria-hidden="true" style={{
