@@ -580,8 +580,8 @@ export default function LandingPage() {
         {/* ── Description ── */}
         <div className="anim-about w-full max-w-[500px] flex flex-col gap-5">
           <p className="font-inter text-[#A1A1A6] text-[0.9rem] leading-[1.75] text-center">
-            We build software with <span className="text-[#EDEDED]">AI</span>, operate it, and sell it —
-            or hand you the exact <span className="text-[#EDEDED]">DevSpecs</span> so you can build it yourself.
+            We build software with <span className="text-[#EDEDED]">AI</span>, operate it, and sell it.
+            Or hand you the exact <span className="text-[#EDEDED]">DevSpecs</span> so you can build it yourself.
           </p>
 
           {/* Two paths */}
@@ -591,7 +591,7 @@ export default function LandingPage() {
               <div>
                 <p className="font-inter text-[0.78rem] text-[#EDEDED] leading-snug">Full Implementation</p>
                 <p className="font-inter text-[0.72rem] text-[#525258] leading-relaxed mt-0.5">
-                  We scope, build, and ship the entire system for you — cloud infrastructure, AI integrations, and all.
+                  We scope, build, and ship the entire system for you. Cloud infrastructure, AI integrations, and all.
                 </p>
               </div>
             </div>
