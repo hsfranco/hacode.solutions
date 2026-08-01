@@ -271,6 +271,90 @@ const PHASES = [
   'Ship in Days, Not Months',
 ]
 
+/* ─── Loading screen ─────────────────────────────────────────────────────────── */
+function LoadingScreen({ onDone }: { onDone: () => void }) {
+  const [progress, setProgress] = useState(0)
+  const [exiting, setExiting]   = useState(false)
+  const onDoneRef = useRef(onDone)
+  onDoneRef.current = onDone
+
+  useEffect(() => {
+    let current = 0
+    const total  = 1600
+    const steps  = 100
+    const delay  = total / steps
+
+    const id = setInterval(() => {
+      current += 1
+      setProgress(current)
+      if (current >= steps) {
+        clearInterval(id)
+        setTimeout(() => {
+          setExiting(true)
+          setTimeout(() => onDoneRef.current(), 700)
+        }, 250)
+      }
+    }, delay)
+
+    return () => clearInterval(id)
+  }, [])
+
+  return (
+    <div
+      aria-hidden="true"
+      style={{
+        position: 'fixed', inset: 0, zIndex: 9999,
+        background: '#0A0A0B',
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        transform: exiting ? 'translateY(-100%)' : 'translateY(0)',
+        transition: exiting ? 'transform 0.7s cubic-bezier(0.76, 0, 0.24, 1)' : 'none',
+      }}
+    >
+      {/* Logo */}
+      <div style={{
+        width: 64, height: 64, borderRadius: '50%',
+        background: 'rgba(255,255,255,0.06)',
+        boxShadow: '0 0 0 1px rgba(255,255,255,0.12)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        <Image src={LOGO_URL} alt="" width={50} height={50} priority className="rounded-full object-cover" />
+      </div>
+
+      {/* Brand */}
+      <span style={{
+        fontFamily: 'var(--font-poppins), sans-serif',
+        fontWeight: 700, fontSize: '0.85rem',
+        letterSpacing: '0.14em', color: '#FFFFFF',
+        marginTop: '20px', textTransform: 'uppercase',
+      }}>
+        HACODE SOLUTIONS
+      </span>
+
+      {/* Counter */}
+      <span className="font-jetbrains" style={{
+        fontSize: '0.6rem', color: '#3A3A40',
+        letterSpacing: '0.12em', marginTop: '10px',
+      }}>
+        {String(progress).padStart(3, '0')}
+      </span>
+
+      {/* Progress bar */}
+      <div style={{
+        position: 'absolute', bottom: 0, left: 0, right: 0,
+        height: '1px', background: 'rgba(255,255,255,0.05)',
+      }}>
+        <div style={{
+          height: '100%',
+          width: `${progress}%`,
+          background: 'rgba(255,255,255,0.25)',
+          transition: 'width 0.06s linear',
+        }} />
+      </div>
+    </div>
+  )
+}
+
 /* ─── Main component ─────────────────────────────────────────────────────────── */
 export default function LandingPage() {
   const rootRef  = useRef<HTMLDivElement>(null)
@@ -280,6 +364,7 @@ export default function LandingPage() {
   const [hoveredCard, setHoveredCard]   = useState<number | null>(null)
   const [phaseIdx, setPhaseIdx]         = useState(0)
   const [phaseVisible, setPhaseVisible] = useState(true)
+  const [ready, setReady]               = useState(false)
 
   /* ── Preload audio ── */
   useEffect(() => {
@@ -308,9 +393,9 @@ export default function LandingPage() {
     gsapRef.current.to(logoRef.current, { scale: 1, duration: 0.65, ease: 'elastic.out(1, 0.45)' })
   }
 
-  /* ── Load animation ── */
+  /* ── Entrance animation — runs after loading screen exits ── */
   useEffect(() => {
-    if (!rootRef.current) return
+    if (!ready || !rootRef.current) return
     const noMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (noMotion) return
 
@@ -339,7 +424,7 @@ export default function LandingPage() {
 
     run()
     return () => ctx?.revert()
-  }, [])
+  }, [ready])
 
   /* ── Phase rotation ── */
   useEffect(() => {
@@ -357,6 +442,8 @@ export default function LandingPage() {
   }, [])
 
   return (
+    <>
+      {!ready && <LoadingScreen onDone={() => setReady(true)} />}
     <div ref={rootRef} className="relative min-h-screen flex flex-col">
       <AuroraBackground />
 
@@ -621,5 +708,6 @@ export default function LandingPage() {
 
       </div>
     </div>
+    </>
   )
 }

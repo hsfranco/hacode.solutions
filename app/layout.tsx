@@ -56,6 +56,11 @@ export const metadata: Metadata = {
     images: [LOGO_URL],
   },
   robots: { index: true, follow: true },
+  icons: {
+    icon: LOGO_URL,
+    shortcut: LOGO_URL,
+    apple: LOGO_URL,
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
