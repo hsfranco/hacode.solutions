@@ -369,6 +369,17 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
         transition: exiting ? 'transform 0.7s cubic-bezier(0.76, 0, 0.24, 1)' : 'none',
       }}
     >
+      {/* Logo */}
+      <div style={{
+        width: 52, height: 52, borderRadius: '50%',
+        background: 'rgba(255,255,255,0.05)',
+        boxShadow: '0 0 0 1px rgba(255,255,255,0.10)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        marginBottom: '-8px',
+      }}>
+        <Image src={LOGO_URL} alt="" width={42} height={42} priority className="rounded-full object-cover" />
+      </div>
+
       {/* Big stroke-to-fill number */}
       <div style={{ position: 'relative', lineHeight: 1, userSelect: 'none' }}>
         {/* Outline layer — always visible */}
