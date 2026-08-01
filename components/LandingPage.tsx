@@ -439,13 +439,14 @@ function LoadingScreen({ onDone, audioReady }: { onDone: () => void; audioReady:
     >
       {/* Logo */}
       <div style={{
-        width: 52, height: 52, borderRadius: '50%',
-        background: 'rgba(255,255,255,0.05)',
-        boxShadow: '0 0 0 1px rgba(255,255,255,0.10)',
+        width: 56, height: 56, borderRadius: '50%',
+        background: '#FFFFFF',
+        padding: 5,
+        boxShadow: '0 0 0 1px rgba(255,255,255,0.18)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         marginBottom: '-8px',
       }}>
-        <Image src={LOGO_URL} alt="" width={42} height={42} priority className="rounded-full object-cover" />
+        <Image src={LOGO_URL} alt="" width={46} height={46} priority className="rounded-full object-cover" />
       </div>
 
       {/* Big stroke-to-fill number */}
@@ -676,16 +677,16 @@ export default function LandingPage() {
               style={{
                 width: 64, height: 64,
                 borderRadius: '50%',
-                boxShadow: '0 0 0 1px rgba(255,255,255,0.14), 0 0 0 6px rgba(255,255,255,0.03)',
-                background: 'rgba(255,255,255,0.06)',
+                background: '#FFFFFF',
+                padding: 6,
+                boxShadow: '0 0 0 1px rgba(255,255,255,0.18), 0 0 0 7px rgba(255,255,255,0.04)',
               }}
             >
-              <div className="absolute inset-0 rounded-full" style={{ border: '1px solid rgba(255,255,255,0.2)' }} aria-hidden="true" />
               <Image
                 src={LOGO_URL}
                 alt="HACODE SOLUTIONS"
-                width={50}
-                height={50}
+                width={52}
+                height={52}
                 priority
                 className="rounded-full object-cover"
               />
