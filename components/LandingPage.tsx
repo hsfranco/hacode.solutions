@@ -578,7 +578,7 @@ export default function LandingPage() {
         </header>
 
         {/* ── Description ── */}
-        <div className="anim-about w-full max-w-[980px] flex flex-col gap-4">
+        <div className="anim-about w-full max-w-[500px] flex flex-col gap-4">
           <p className="font-inter text-[#A1A1A6] text-[0.9rem] leading-[1.75] text-center">
             We build web solutions using{' '}
             <span className="text-[#EDEDED]">Cloud services</span> and{' '}
