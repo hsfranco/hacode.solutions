@@ -327,31 +327,46 @@ function CustomCursor() {
 }
 
 /* ─── Loading screen ─────────────────────────────────────────────────────────── */
-function LoadingScreen({ onDone }: { onDone: () => void }) {
+function LoadingScreen({ onDone, audioReady }: { onDone: () => void; audioReady: boolean }) {
   const [progress, setProgress] = useState(0)
   const [exiting, setExiting]   = useState(false)
-  const onDoneRef = useRef(onDone)
-  onDoneRef.current = onDone
+  const onDoneRef    = useRef(onDone)
+  const audioReadyRef = useRef(audioReady)
+  onDoneRef.current    = onDone
+  audioReadyRef.current = audioReady
 
   useEffect(() => {
-    let current = 0
-    const total  = 1600
-    const steps  = 100
-    const delay  = total / steps
+    let current   = 0
+    const total   = 1600
+    const steps   = 100
+    const delay   = total / steps
+    let countDone = false
+
+    const tryExit = () => {
+      if (!countDone || !audioReadyRef.current) return
+      setExiting(true)
+      setTimeout(() => onDoneRef.current(), 700)
+    }
 
     const id = setInterval(() => {
       current += 1
       setProgress(current)
       if (current >= steps) {
         clearInterval(id)
-        setTimeout(() => {
-          setExiting(true)
-          setTimeout(() => onDoneRef.current(), 700)
-        }, 250)
+        countDone = true
+        setTimeout(tryExit, 250)
       }
     }, delay)
 
-    return () => clearInterval(id)
+    // Poll for audio ready after counter finishes
+    const poll = setInterval(() => {
+      if (countDone && audioReadyRef.current) {
+        clearInterval(poll)
+        tryExit()
+      }
+    }, 80)
+
+    return () => { clearInterval(id); clearInterval(poll) }
   }, [])
 
   const displayed = String(progress).padStart(3, '0')
@@ -449,6 +464,8 @@ export default function LandingPage() {
   const [phaseVisible, setPhaseVisible] = useState(true)
   const [ready, setReady]               = useState(false)
   const [gsapLoaded, setGsapLoaded]     = useState(false)
+  const [audioReady, setAudioReady]     = useState(false)
+  const playClickRef = useRef<() => void>(() => {})
 
   /* ── Preload GSAP + hide elements immediately (during loading screen) ── */
   useEffect(() => {
@@ -481,7 +498,8 @@ export default function LandingPage() {
         )
         const raw = await res.arrayBuffer()
         audioBufferRef.current = await ctx.decodeAudioData(raw)
-      } catch { /* fail silently */ }
+        setAudioReady(true)
+      } catch { setAudioReady(true) /* fail silently but unblock loader */ }
     }
     load()
   }, [])
@@ -502,6 +520,31 @@ export default function LandingPage() {
       src.start(0)
     } catch { /* fail silently */ }
   }
+  playClickRef.current = playClick
+
+  /* ── Global hover sound on all interactive elements ── */
+  useEffect(() => {
+    const SELECTOR = 'a, button, article, [role="button"], .marquee-track > div'
+    let lastEl: Element | null = null
+
+    const onOver = (e: MouseEvent) => {
+      const target = (e.target as Element).closest(SELECTOR)
+      if (target && target !== lastEl) {
+        lastEl = target
+        playClickRef.current()
+      }
+    }
+    const onOut = (e: MouseEvent) => {
+      if ((e.target as Element).closest(SELECTOR) === lastEl) lastEl = null
+    }
+
+    document.addEventListener('mouseover', onOver, { passive: true })
+    document.addEventListener('mouseout',  onOut,  { passive: true })
+    return () => {
+      document.removeEventListener('mouseover', onOver)
+      document.removeEventListener('mouseout',  onOut)
+    }
+  }, [])
 
   /* ── Logo hover ── */
   const handleLogoEnter = () => {
@@ -547,7 +590,7 @@ export default function LandingPage() {
   return (
     <>
       <CustomCursor />
-      {!ready && <LoadingScreen onDone={() => setReady(true)} />}
+      {!ready && <LoadingScreen onDone={() => setReady(true)} audioReady={audioReady} />}
     <div ref={rootRef} className="relative min-h-screen flex flex-col">
       <AuroraBackground />
 
